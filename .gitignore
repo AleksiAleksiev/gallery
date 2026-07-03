@@ -39,3 +39,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# seed pipeline artifacts (regenerable; images rsync'd to the VM, not committed)
+/data/gallery.sqlite
+/data/cache/
+/data/json/
+/data/*.log
+/public/images/
+
+# stray scratch output
+/1880
+
+# owner's private image overrides — never commit
+/overrides/
