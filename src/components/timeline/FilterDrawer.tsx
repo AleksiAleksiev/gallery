@@ -8,6 +8,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import type { TimelineData } from "@/lib/timeline";
+import { pigmentOf } from "@/lib/palette";
 
 interface Props {
   data: TimelineData;
@@ -72,11 +73,11 @@ export default function FilterDrawer({ data, periodLabel, onPickPeriod, onPickAr
       onClick={() => setOpen(open === drawer ? null : drawer)}
       aria-expanded={open === drawer}
       className={`engraved cursor-pointer border-b pb-1 text-[11px] tracking-[0.28em] transition-colors ${
-        open === drawer ? "border-gilt text-gilt" : "border-transparent text-ink-soft hover:text-ink"
+        open === drawer ? "border-gilt text-gilt-deep" : "border-transparent text-ink-soft hover:text-ink"
       }`}
     >
       {label}
-      {value && <span className="ml-2 normal-case italic tracking-normal text-gilt">{value}</span>}
+      {value && <span className="ml-2 normal-case italic tracking-normal text-gilt-deep">{value}</span>}
       <span aria-hidden className="ml-1.5 inline-block text-[9px]">
         {open === drawer ? "▴" : "▾"}
       </span>
@@ -120,7 +121,7 @@ export default function FilterDrawer({ data, periodLabel, onPickPeriod, onPickAr
                       <span
                         aria-hidden
                         className="mr-2 inline-block h-2 w-2 border border-ink/30"
-                        style={{ background: p.accent, opacity: 0.75 }}
+                        style={{ background: pigmentOf(p.slug, p.accent), opacity: 0.9 }}
                       />
                       {p.name}
                     </span>

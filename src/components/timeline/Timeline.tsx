@@ -7,6 +7,7 @@
 
 import {
   forwardRef,
+  Fragment,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -16,6 +17,7 @@ import {
 } from "react";
 import gsap from "gsap";
 import type { TimelineArtist, TimelineData, TimelinePeriod } from "@/lib/timeline";
+import { PERIOD_MEDIUM, PERIOD_SHORTHAND, pigmentOf } from "@/lib/palette";
 import { artistSpan, packLanes, ticksFor } from "./layout";
 
 export interface TimelineHandle {
@@ -281,9 +283,21 @@ const Timeline = forwardRef<TimelineHandle, Props>(function Timeline(
             const isExp = p.slug === expanded;
             const h = isExp ? BAND_H + extra : BAND_H;
             return (
-              <clipPath id={`clip-${p.slug}`} key={p.slug}>
-                <rect x={x} y={laneY(lanes.get(p.slug) ?? 0)} width={w} height={h} rx={2} />
-              </clipPath>
+              <Fragment key={p.slug}>
+                <clipPath id={`clip-${p.slug}`}>
+                  <rect x={x} y={laneY(lanes.get(p.slug) ?? 0)} width={w} height={h} rx={2} />
+                </clipPath>
+                {/* engraver's hatch, one screen-fixed diagonal per pigment */}
+                <pattern
+                  id={`hatch-${p.slug}`}
+                  patternUnits="userSpaceOnUse"
+                  width={5}
+                  height={5}
+                  patternTransform="rotate(-45)"
+                >
+                  <line x1={2.5} y1={0} x2={2.5} y2={5} stroke={pigmentOf(p.slug, p.accent)} strokeWidth={1.1} />
+                </pattern>
+              </Fragment>
             );
           })}
         </defs>
@@ -335,10 +349,40 @@ const Timeline = forwardRef<TimelineHandle, Props>(function Timeline(
           const h = isExp ? BAND_H + extra : BAND_H;
           const y = laneY(lane);
           const dimmed = expanded !== null && !isExp;
-          // Letterspaced caps at ~14.5px run ≈11px per character; hide the
-          // label (band + pigment chip still read) rather than clip mid-letter.
-          const labelFits = isExp || w > p.name.length * 11 + 24;
-          const yearsFit = w > 110;
+          const pigment = pigmentOf(p.slug, p.accent);
+          const medium = PERIOD_MEDIUM[p.slug];
+          const shorthand = PERIOD_SHORTHAND[p.slug] ?? p.name;
+          // Lettering tiers, widest to narrowest: full engraved caps →
+          // tightened caps → a single-word stand-in → catalogue shorthand →
+          // shorthand run vertically → pigment chip only (hover still names
+          // the stratum). Character budgets approximate Cormorant caps at
+          // each size + tracking.
+          let tier: "full" | "tight" | "short" | "vertical" | "none";
+          let label = p.name;
+          if (isExp || w > p.name.length * 11 + 24) {
+            tier = "full";
+          } else if (w > p.name.length * 8.3 + 16) {
+            tier = "tight";
+          } else if (medium && w > medium.length * 8.3 + 16) {
+            tier = "tight";
+            label = medium;
+          } else if (w > shorthand.length * 6.9 + 12) {
+            tier = "short";
+            label = shorthand;
+          } else if (shorthand.length * 6.1 <= BAND_H - 8 && w >= 17) {
+            tier = "vertical";
+            label = shorthand;
+          } else {
+            tier = "none";
+          }
+          // In-band year captions need the label to leave room for two
+          // 4-digit italics (~30px each) plus edge padding, or they letter
+          // straight underneath the label's first and last characters.
+          const labelEst = tier === "tight" ? label.length * 8.3 : p.name.length * 11;
+          const yearsFit = isExp || w > labelEst + 96;
+          // Open strata morph fill/hatch/stroke along the expand tween so
+          // neither end of the animation snaps.
+          const t = isExp ? view.expandT : 0;
 
           return (
             <g
@@ -366,46 +410,113 @@ const Timeline = forwardRef<TimelineHandle, Props>(function Timeline(
                 width={w}
                 height={h}
                 rx={2}
-                fill={p.accent}
-                fillOpacity={isExp ? 0.1 : isHover ? 0.26 : 0.17}
+                fill={pigment}
+                fillOpacity={(isHover ? 0.4 : 0.3) * (1 - t) + 0.1 * t}
+              />
+              {/* the hatch fades away as the stratum opens into artist rows */}
+              <rect
+                x={x}
+                y={y}
+                width={w}
+                height={h}
+                fill={`url(#hatch-${p.slug})`}
+                opacity={(isHover ? 0.3 : 0.22) * (1 - t)}
+                clipPath={`url(#clip-${p.slug})`}
+              />
+              <rect
+                x={x}
+                y={y}
+                width={w}
+                height={h}
+                rx={2}
+                fill="none"
                 stroke="var(--ink)"
-                strokeOpacity={isExp || isHover ? 0.55 : 0.3}
+                strokeOpacity={isHover ? 0.6 : 0.38 + 0.22 * t}
                 strokeWidth={1}
               />
               {/* pigment chip — the catalogue swatch at the stratum's left edge */}
-              <rect x={x} y={y} width={5} height={h} fill={p.accent} opacity={0.85} clipPath={`url(#clip-${p.slug})`} />
+              <rect x={x} y={y} width={5} height={h} fill={pigment} opacity={0.95} clipPath={`url(#clip-${p.slug})`} />
 
-              {labelFits ? (
+              {(tier === "full" || tier === "tight") && (
                 <text
                   x={x + w / 2}
-                  y={isExp ? y + 30 : y + h / 2 + 6}
+                  y={isExp ? y + 30 : y + h / 2 + (tier === "full" ? 6 : 4.5)}
                   textAnchor="middle"
                   className="engraved"
                   fill="var(--ink)"
-                  fontSize={isExp ? 17 : 14.5}
-                  letterSpacing="0.22em"
+                  fontSize={isExp ? 17 : tier === "full" ? 14.5 : 12.5}
+                  stroke="var(--paper)"
+                  strokeOpacity={0.5}
+                  strokeWidth={2.5}
+                  strokeLinejoin="round"
+                  // tracking must ride the style prop: .engraved's CSS
+                  // letter-spacing beats SVG presentation attributes
+                  style={{ paintOrder: "stroke", letterSpacing: tier === "full" ? "0.22em" : "0.08em" }}
                   clipPath={`url(#clip-${p.slug})`}
                 >
-                  {p.name}
+                  {isExp ? p.name : label}
                 </text>
-              ) : (
-                isHover && (
-                  // floating label for strata too narrow to letter — sits above
-                  // the band like a curator's pencil note
-                  <text
-                    x={x + w / 2}
-                    y={y - 8}
-                    textAnchor="middle"
-                    className="engraved"
-                    fill="var(--ink)"
-                    fontSize={13}
-                    letterSpacing="0.2em"
-                  >
-                    {p.name} · {p.startYear}–{p.endYear}
-                  </text>
-                )
               )}
-              {(isHover || isExp) && yearsFit && (
+              {tier === "short" && (
+                <text
+                  x={x + w / 2}
+                  y={y + h / 2 + 4}
+                  textAnchor="middle"
+                  className="engraved"
+                  fill="var(--ink)"
+                  fontSize={10.5}
+                  stroke="var(--paper)"
+                  strokeOpacity={0.5}
+                  strokeWidth={2}
+                  strokeLinejoin="round"
+                  style={{ paintOrder: "stroke", letterSpacing: "0.08em" }}
+                  clipPath={`url(#clip-${p.slug})`}
+                >
+                  {label}
+                </text>
+              )}
+              {tier === "vertical" && (
+                <text
+                  x={x + w / 2}
+                  y={y + h / 2}
+                  transform={`rotate(-90 ${x + w / 2} ${y + h / 2})`}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  className="engraved"
+                  fill="var(--ink)"
+                  fontSize={9.5}
+                  stroke="var(--paper)"
+                  strokeOpacity={0.5}
+                  strokeWidth={2}
+                  strokeLinejoin="round"
+                  style={{ paintOrder: "stroke", letterSpacing: "0.06em" }}
+                  clipPath={`url(#clip-${p.slug})`}
+                >
+                  {label}
+                </text>
+              )}
+              {isHover && !isExp && (tier === "none" || label !== p.name || !yearsFit) && (
+                // the curator's pencil note: full name + span floated above
+                // the band, haloed in paper so it reads over the year grid.
+                // Shown whenever the band itself can't letter both the full
+                // name and its years.
+                <text
+                  x={x + w / 2}
+                  y={y - 9}
+                  textAnchor="middle"
+                  className="engraved"
+                  fill="var(--ink)"
+                  fontSize={12.5}
+                  stroke="var(--paper)"
+                  strokeOpacity={0.9}
+                  strokeWidth={4}
+                  strokeLinejoin="round"
+                  style={{ paintOrder: "stroke", letterSpacing: "0.14em" }}
+                >
+                  {p.name} · {p.startYear}–{p.endYear}
+                </text>
+              )}
+              {(isHover || isExp) && yearsFit && (tier === "full" || tier === "tight") && (
                 <>
                   <text
                     x={x + 12}
@@ -508,7 +619,7 @@ const Timeline = forwardRef<TimelineHandle, Props>(function Timeline(
                         <text
                           x={Math.min(Math.max(ax1 + 17, 14), Math.max(ax2 - 30, ax1 + 17))}
                           y={ay - 6}
-                          fill={isSel ? "var(--gilt)" : "var(--ink)"}
+                          fill={isSel ? "var(--gilt-deep)" : "var(--ink)"}
                           fontSize={14.5}
                           fontFamily="var(--font-cormorant)"
                           fontWeight={isSel ? 700 : 500}

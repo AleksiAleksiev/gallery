@@ -1,14 +1,28 @@
 @import "tailwindcss";
 
 :root {
+  /* Paper surfaces (the atlas). Every ink step holds WCAG AA (≥4.5:1) on
+     every paper surface it sits on, --paper-shade hover rows included. */
   --paper: #f1ebdc;
   --paper-deep: #e8dfca;
   --paper-shade: #ddd2b6;
   --ink: #2b261e;
-  --ink-soft: #6e6353;
-  --ink-faint: #998d78;
+  --ink-soft: #564c3d;
+  --ink-faint: #625641;
   --rule: #c8bc9f;
+  /* Gilt in three tones: --gilt for hairlines and ornament, --gilt-deep for
+     text on paper (5.2:1), --gilt-bright for text on night (8.6:1). */
   --gilt: #96742f;
+  --gilt-deep: #6e5319;
+  --gilt-bright: #d2ab61;
+  /* Night surfaces (the museum). Faint step keeps 5.4:1 on --night. */
+  --night: #16120c;
+  --night-raise: #1d1810;
+  --night-line: #3d3524;
+  --night-line-strong: #4a3f2c;
+  --night-ink: #ece2c9;
+  --night-soft: #b9ab8c;
+  --night-faint: #97896c;
 }
 
 @theme inline {
@@ -20,6 +34,15 @@
   --color-ink-faint: var(--ink-faint);
   --color-rule: var(--rule);
   --color-gilt: var(--gilt);
+  --color-gilt-deep: var(--gilt-deep);
+  --color-gilt-bright: var(--gilt-bright);
+  --color-night: var(--night);
+  --color-night-raise: var(--night-raise);
+  --color-night-line: var(--night-line);
+  --color-night-line-strong: var(--night-line-strong);
+  --color-night-ink: var(--night-ink);
+  --color-night-soft: var(--night-soft);
+  --color-night-faint: var(--night-faint);
   --font-display: var(--font-cormorant);
   --font-body: var(--font-crimson);
 }
@@ -117,6 +140,12 @@ body::before {
 /* Selection color that suits the paper. */
 ::selection {
   background: rgba(150, 116, 47, 0.25);
+}
+
+/* Keyboard focus reads as a gilt frame on both paper and night. */
+:focus-visible {
+  outline: 1.5px solid var(--gilt);
+  outline-offset: 3px;
 }
 
 /* Thin, paper-toned scrollbars for the placard bio. */

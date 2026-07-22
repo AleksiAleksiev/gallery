@@ -12,6 +12,7 @@ import * as THREE from "three";
 import { Canvas } from "@react-three/fiber";
 import { PerformanceMonitor, useProgress } from "@react-three/drei";
 import type { MuseumArtist } from "@/lib/museum";
+import { pigmentOf } from "@/lib/palette";
 import { ARRIVE_DARK_KEY } from "@/lib/transitions";
 import { buildLayout, type Placement } from "./layout";
 import GalleryScene, { type Quality } from "./GalleryScene";
@@ -132,7 +133,7 @@ export default function MuseumApp({ artist, periodName }: Props) {
   }, [phase, closeInspect]);
 
   return (
-    <div className={`fixed inset-0 bg-[#16120c] ${phase === "inspecting" ? "cursor-grab active:cursor-grabbing" : ""}`}>
+    <div className={`fixed inset-0 bg-night ${phase === "inspecting" ? "cursor-grab active:cursor-grabbing" : ""}`}>
       <Canvas
         camera={{ fov: 60, near: 0.05, far: 120 }}
         dpr={quality === "high" ? [1, 2] : [1, 1.5]}
@@ -168,16 +169,16 @@ export default function MuseumApp({ artist, periodName }: Props) {
           <div className="pointer-events-none absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2">
             <div
               className={`h-1.5 w-1.5 rounded-full transition-all duration-200 ${
-                target ? "scale-[2.2] bg-gilt" : "bg-[#cdbf9f]/70"
+                target ? "scale-[2.2] bg-gilt-bright" : "bg-night-ink/70"
               }`}
             />
           </div>
           {target && (
-            <p className="engraved pointer-events-none absolute left-1/2 top-[58%] z-30 -translate-x-1/2 text-[11px] tracking-[0.3em] text-[#e8dfca] [text-shadow:0_1px_8px_rgba(0,0,0,0.8)]">
+            <p className="engraved pointer-events-none absolute left-1/2 top-[58%] z-30 -translate-x-1/2 text-[11px] tracking-[0.3em] text-night-ink [text-shadow:0_1px_8px_rgba(0,0,0,0.8)]">
               {target.painting.title}
             </p>
           )}
-          <p className="engraved pointer-events-none absolute bottom-5 left-1/2 z-30 -translate-x-1/2 text-[9.5px] tracking-[0.3em] text-[#8a7a5c]/80">
+          <p className="engraved pointer-events-none absolute bottom-5 left-1/2 z-30 -translate-x-1/2 text-[9.5px] tracking-[0.3em] text-night-soft/90 [text-shadow:0_1px_6px_rgba(0,0,0,0.7)]">
             wasd walk · aim and click to inspect · esc to pause
           </p>
         </>
@@ -186,19 +187,19 @@ export default function MuseumApp({ artist, periodName }: Props) {
       {/* ---- paused ---- */}
       {phase === "paused" && (
         <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/45">
-          <div className="border border-[#4a3f2c] bg-[#1d1810]/95 px-12 py-9 text-center shadow-[0_18px_60px_-12px_rgba(0,0,0,0.8)]">
-            <h2 className="engraved text-[15px] tracking-[0.26em] text-[#e8dfca]">{artist.name}</h2>
-            <div className="mx-auto mt-3 w-16 border-t border-[#4a3f2c]" />
+          <div className="border border-night-line-strong bg-night-raise/95 px-12 py-9 text-center shadow-[0_18px_60px_-12px_rgba(0,0,0,0.8)]">
+            <h2 className="engraved text-[15px] tracking-[0.26em] text-night-ink">{artist.name}</h2>
+            <div className="mx-auto mt-3 w-16 border-t border-night-line-strong" />
             <button
               onClick={enter}
-              className="engraved mt-6 block w-full cursor-pointer border border-[#3d3524] px-8 py-3 text-[11px] tracking-[0.32em] text-[#cdbf9f] transition-colors hover:border-gilt hover:text-gilt"
+              className="engraved mt-6 block w-full cursor-pointer border border-night-line-strong bg-gilt/[0.05] px-8 py-3 text-[11px] tracking-[0.32em] text-gilt-bright transition-all hover:border-gilt-bright/70 hover:bg-gilt/15"
             >
               resume the walk
             </button>
             <Link
               href="/"
               onClick={() => sessionStorage.setItem(ARRIVE_DARK_KEY, "1")}
-              className="engraved mt-4 inline-block text-[10px] tracking-[0.28em] text-[#6e6046] underline decoration-[#3d3524] underline-offset-4 transition-colors hover:text-gilt"
+              className="engraved mt-4 inline-block text-[10px] tracking-[0.28em] text-night-faint underline decoration-night-line underline-offset-4 transition-colors hover:text-gilt-bright"
             >
               ⟵ return to the atlas
             </Link>
@@ -211,7 +212,7 @@ export default function MuseumApp({ artist, periodName }: Props) {
 
       {/* ---- leaving through the door: fade to dark, then the atlas ---- */}
       <div
-        className={`pointer-events-none absolute inset-0 z-50 bg-[#16120c] transition-opacity duration-700 ${
+        className={`pointer-events-none absolute inset-0 z-50 bg-night transition-opacity duration-700 ${
           leaving ? "opacity-100" : "opacity-0"
         }`}
       />
@@ -221,6 +222,7 @@ export default function MuseumApp({ artist, periodName }: Props) {
         <Vestibule
           artist={artist}
           periodName={periodName}
+          pigment={pigmentOf(artist.periodSlug)}
           ready={ready}
           progress={progress}
           leaving={vestibule === "leaving"}

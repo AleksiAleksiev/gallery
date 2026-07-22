@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import type { TimelineArtist, TimelinePeriod } from "@/lib/timeline";
+import { pigmentOf } from "@/lib/palette";
 import { dateLine } from "./layout";
 
 interface Props {
@@ -64,11 +65,17 @@ export default function ArtistPlacard({ artist, period, onClose }: Props) {
     >
       {/* inner hairline — the double-matted frame */}
       <div className="pointer-events-none absolute inset-1.5 border border-rule opacity-60" />
+      {/* the period's pigment chip, carried over from the stratum */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[3px]"
+        style={{ background: pigmentOf(period.slug, period.accent) }}
+      />
 
       <button
         onClick={onClose}
         aria-label="Close"
-        className="engraved absolute right-4 top-3 z-10 cursor-pointer text-[13px] text-ink-soft transition-colors hover:text-gilt"
+        className="engraved absolute right-4 top-3 z-10 cursor-pointer text-[13px] text-ink-soft transition-colors hover:text-gilt-deep"
       >
         ✕
       </button>
@@ -134,7 +141,7 @@ export default function ArtistPlacard({ artist, period, onClose }: Props) {
               href={artist.wikipediaUrl}
               target="_blank"
               rel="noreferrer"
-              className="engraved text-[10px] tracking-[0.28em] text-ink-faint underline decoration-rule underline-offset-4 transition-colors hover:text-gilt"
+              className="engraved text-[10px] tracking-[0.28em] text-ink-faint underline decoration-rule underline-offset-4 transition-colors hover:text-gilt-deep"
             >
               source · wikipedia ↗
             </a>
@@ -147,7 +154,7 @@ export default function ArtistPlacard({ artist, period, onClose }: Props) {
         <Link
           href={`/museum/${artist.slug}`}
           onClick={enter}
-          className="engraved group flex items-center justify-between text-[12px] tracking-[0.3em] text-ink transition-colors hover:text-gilt"
+          className="engraved group flex items-center justify-between text-[12px] tracking-[0.3em] text-ink transition-colors hover:text-gilt-deep"
         >
           <span>enter the museum</span>
           <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1.5">
@@ -158,7 +165,7 @@ export default function ArtistPlacard({ artist, period, onClose }: Props) {
 
       {/* the lights dim on the way in */}
       <div
-        className={`pointer-events-none fixed inset-0 z-[90] bg-[#16120c] transition-opacity duration-[600ms] ease-in ${
+        className={`pointer-events-none fixed inset-0 z-[90] bg-night transition-opacity duration-[600ms] ease-in ${
           entering ? "opacity-100" : "opacity-0"
         }`}
       />

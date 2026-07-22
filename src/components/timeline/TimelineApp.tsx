@@ -43,7 +43,7 @@ export default function TimelineApp({ data }: Props) {
     <main className="relative flex h-full flex-col p-4 sm:p-6">
       <div
         ref={arriveOverlay}
-        className="pointer-events-none fixed inset-0 z-[90] bg-[#16120c] opacity-0 transition-opacity duration-700 ease-out"
+        className="pointer-events-none fixed inset-0 z-[90] bg-night opacity-0 transition-opacity duration-700 ease-out"
       />
       {/* the plate frame */}
       <div className="relative flex min-h-0 flex-1 flex-col border border-rule">

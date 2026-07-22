@@ -15,7 +15,7 @@ export interface SeedPeriod {
   wiki: string; // Wikipedia article for the period summary
   startYear: number;
   endYear: number;
-  accent: string; // UI accent color (design choice, not data)
+  accent: string; // fallback accent — display truth lives in src/lib/palette.ts
 }
 
 export interface SeedArtist {
@@ -30,25 +30,25 @@ export interface SeedArtist {
 }
 
 export const PERIODS: SeedPeriod[] = [
-  { slug: "medieval-gothic", name: "Medieval & Gothic", wiki: "Gothic art", startYear: 1150, endYear: 1400, accent: "#8a6d3b" },
-  { slug: "early-renaissance", name: "Early Renaissance", wiki: "Italian Renaissance painting", startYear: 1400, endYear: 1495, accent: "#9c6644" },
-  { slug: "northern-renaissance", name: "Northern Renaissance", wiki: "Northern Renaissance", startYear: 1420, endYear: 1570, accent: "#5e503f" },
-  { slug: "high-renaissance", name: "High Renaissance", wiki: "High Renaissance", startYear: 1490, endYear: 1530, accent: "#7f5539" },
-  { slug: "mannerism", name: "Mannerism", wiki: "Mannerism", startYear: 1520, endYear: 1600, accent: "#6b705c" },
-  { slug: "baroque", name: "Baroque", wiki: "Baroque painting", startYear: 1600, endYear: 1730, accent: "#582f0e" },
-  { slug: "rococo", name: "Rococo", wiki: "Rococo", startYear: 1715, endYear: 1780, accent: "#b08968" },
-  { slug: "neoclassicism", name: "Neoclassicism", wiki: "Neoclassicism", startYear: 1760, endYear: 1830, accent: "#4a5759" },
-  { slug: "romanticism", name: "Romanticism", wiki: "Romanticism", startYear: 1780, endYear: 1850, accent: "#735d78" },
-  { slug: "realism", name: "Realism", wiki: "Realism (art movement)", startYear: 1840, endYear: 1880, accent: "#6c584c" },
-  { slug: "impressionism", name: "Impressionism", wiki: "Impressionism", startYear: 1860, endYear: 1895, accent: "#7209b7" },
-  { slug: "post-impressionism", name: "Post-Impressionism", wiki: "Post-Impressionism", startYear: 1885, endYear: 1910, accent: "#f3722c" },
-  { slug: "symbolism-art-nouveau", name: "Symbolism & Art Nouveau", wiki: "Symbolism (arts)", startYear: 1880, endYear: 1915, accent: "#bc6c25" },
-  { slug: "expressionism", name: "Expressionism", wiki: "Expressionism", startYear: 1905, endYear: 1935, accent: "#9d0208" },
-  { slug: "cubism-abstraction", name: "Cubism & Early Abstraction", wiki: "Cubism", startYear: 1907, endYear: 1940, accent: "#3a5a40" },
-  { slug: "surrealism", name: "Surrealism", wiki: "Surrealism", startYear: 1920, endYear: 1955, accent: "#3d348b" },
-  { slug: "abstract-expressionism", name: "Abstract Expressionism", wiki: "Abstract expressionism", startYear: 1943, endYear: 1965, accent: "#bb3e03" },
-  { slug: "pop-art", name: "Pop Art", wiki: "Pop art", startYear: 1955, endYear: 1975, accent: "#ef476f" },
-  { slug: "contemporary", name: "Contemporary", wiki: "Contemporary art", startYear: 1970, endYear: 2026, accent: "#118ab2" },
+  { slug: "medieval-gothic", name: "Medieval & Gothic", wiki: "Gothic art", startYear: 1150, endYear: 1400, accent: "#41519c" },
+  { slug: "early-renaissance", name: "Early Renaissance", wiki: "Italian Renaissance painting", startYear: 1400, endYear: 1495, accent: "#a85a3f" },
+  { slug: "northern-renaissance", name: "Northern Renaissance", wiki: "Northern Renaissance", startYear: 1420, endYear: 1570, accent: "#4e6b45" },
+  { slug: "high-renaissance", name: "High Renaissance", wiki: "High Renaissance", startYear: 1490, endYear: 1530, accent: "#9c4038" },
+  { slug: "mannerism", name: "Mannerism", wiki: "Mannerism", startYear: 1520, endYear: 1600, accent: "#8a5f93" },
+  { slug: "baroque", name: "Baroque", wiki: "Baroque painting", startYear: 1600, endYear: 1730, accent: "#6b4b2a" },
+  { slug: "rococo", name: "Rococo", wiki: "Rococo", startYear: 1715, endYear: 1780, accent: "#b26a7c" },
+  { slug: "neoclassicism", name: "Neoclassicism", wiki: "Neoclassicism", startYear: 1760, endYear: 1830, accent: "#5b7286" },
+  { slug: "romanticism", name: "Romanticism", wiki: "Romanticism", startYear: 1780, endYear: 1850, accent: "#6a5a86" },
+  { slug: "realism", name: "Realism", wiki: "Realism (art movement)", startYear: 1840, endYear: 1880, accent: "#7a6248" },
+  { slug: "impressionism", name: "Impressionism", wiki: "Impressionism", startYear: 1860, endYear: 1895, accent: "#8a63ad" },
+  { slug: "post-impressionism", name: "Post-Impressionism", wiki: "Post-Impressionism", startYear: 1885, endYear: 1910, accent: "#c2632f" },
+  { slug: "symbolism-art-nouveau", name: "Symbolism & Art Nouveau", wiki: "Symbolism (arts)", startYear: 1880, endYear: 1915, accent: "#9d7a26" },
+  { slug: "expressionism", name: "Expressionism", wiki: "Expressionism", startYear: 1905, endYear: 1935, accent: "#b23a30" },
+  { slug: "cubism-abstraction", name: "Cubism & Early Abstraction", wiki: "Cubism", startYear: 1907, endYear: 1940, accent: "#6d7258" },
+  { slug: "surrealism", name: "Surrealism", wiki: "Surrealism", startYear: 1920, endYear: 1955, accent: "#4b4e94" },
+  { slug: "abstract-expressionism", name: "Abstract Expressionism", wiki: "Abstract expressionism", startYear: 1943, endYear: 1965, accent: "#bf4d26" },
+  { slug: "pop-art", name: "Pop Art", wiki: "Pop art", startYear: 1955, endYear: 1975, accent: "#bf4a78" },
+  { slug: "contemporary", name: "Contemporary", wiki: "Contemporary art", startYear: 1970, endYear: 2026, accent: "#3d7f96" },
 ];
 
 export const ARTISTS: SeedArtist[] = [
